@@ -20,11 +20,6 @@
             font-family: 'Georgia', serif;
             color: #3e2723;
             padding: 20px;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            -webkit-touch-callout: none;
         }
         
         .libro {
@@ -68,28 +63,7 @@
             border-radius: 10px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             border: 5px solid #f0dcc5;
-            pointer-events: none;
-            -webkit-user-drag: none;
-            -khtml-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            touch-action: none;
             display: block;
-        }
-        
-        .overlay-proteccion {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 10;
-            pointer-events: all;
-            cursor: default;
         }
         
         .marca-agua {
@@ -126,32 +100,17 @@
             color: #8b5e3c;
             font-size: 1.1em;
         }
-
-        .protegido {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        /* Ocultar imagen si hay error */
-        .img-error {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
-    <div class="libro protegido">
+    <div class="libro">
         <div class="cabecera">
-            <h1>📖 Grupo Bondad </h1>
+            <h1>📖 Grupo Bondad</h1>
             <p class="fecha" id="fechaHoy"></p>
         </div>
         
         <div class="imagen-container" id="imagenContainer">
-            <img id="imagenDia" src="" alt="Devocional de hoy" draggable="false">
-            <div class="overlay-proteccion" id="overlay"></div>
+            <img id="imagenDia" src="" alt="Devocional de hoy">
             <div class="marca-agua">DEVOCIONARIO</div>
             <p class="mensaje-espera" id="mensajeEspera" style="display:none;">
                 📖 El devocionario de julio 2026 estará disponible próximamente.
@@ -177,7 +136,6 @@
             const imagenDia = document.getElementById('imagenDia');
             const mensajeEspera = document.getElementById('mensajeEspera');
             const marcaAgua = document.querySelector('.marca-agua');
-            const overlay = document.getElementById('overlay');
             
             // Fecha actual
             const hoy = new Date();
@@ -195,7 +153,6 @@
                 imagenDia.alt = `Devocional ${dia} de julio`;
                 imagenDia.style.display = 'block';
                 marcaAgua.style.display = 'block';
-                overlay.style.display = 'block';
                 mensajeEspera.style.display = 'none';
             }
             
@@ -203,7 +160,6 @@
                 fechaHoy.textContent = '📅 Julio 2026';
                 imagenDia.style.display = 'none';
                 marcaAgua.style.display = 'none';
-                overlay.style.display = 'none';
                 mensajeEspera.style.display = 'block';
             }
             
@@ -215,91 +171,12 @@
                 imagenDia.onerror = function() {
                     this.style.display = 'none';
                     marcaAgua.style.display = 'none';
-                    overlay.style.display = 'none';
                     mensajeEspera.style.display = 'block';
                     mensajeEspera.textContent = '📖 Imagen no disponible. Intenta más tarde.';
                 };
             } else {
                 mostrarEspera();
             }
-            
-            // ==================== PROTECCIONES ====================
-            
-            // 1. Bloquear clic derecho
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                alert('⚠️ Este contenido está protegido.');
-            });
-            
-            // 2. Bloquear arrastrar imágenes
-            document.addEventListener('dragstart', function(e) {
-                if (e.target.tagName === 'IMG') {
-                    e.preventDefault();
-                    alert('⚠️ No está permitido arrastrar imágenes.');
-                }
-            });
-            
-            // 3. Bloquear Ctrl+S, Ctrl+C, Ctrl+U, Ctrl+Shift+I
-            document.addEventListener('keydown', function(e) {
-                const ctrl = e.ctrlKey || e.metaKey;
-                const key = e.key.toLowerCase();
-                
-                // Bloquear combinaciones peligrosas
-                if (ctrl && ['s', 'c', 'u', 'p'].includes(key)) {
-                    e.preventDefault();
-                    alert('⚠️ Acción no permitida.');
-                    return;
-                }
-                
-                // Bloquear F12
-                if (e.key === 'F12') {
-                    e.preventDefault();
-                    alert('⚠️ Herramientas de desarrollo deshabilitadas.');
-                    return;
-                }
-                
-                // Bloquear Ctrl+Shift+I
-                if (ctrl && e.shiftKey && key === 'i') {
-                    e.preventDefault();
-                    alert('⚠️ Herramientas de desarrollo deshabilitadas.');
-                    return;
-                }
-            });
-            
-            // 4. Bloquear selección de texto
-            document.addEventListener('selectstart', function(e) {
-                e.preventDefault();
-            });
-            
-            // 5. Detectar si se abren DevTools (opcional)
-            let devtoolsOpen = false;
-            const devtoolsCheck = function() {
-                const threshold = 160;
-                const widthDiff = window.outerWidth - window.innerWidth;
-                const heightDiff = window.outerHeight - window.innerHeight;
-                
-                if (widthDiff > threshold || heightDiff > threshold) {
-                    if (!devtoolsOpen) {
-                        devtoolsOpen = true;
-                        // Opción: redirigir o mostrar mensaje
-                        // window.location.href = 'about:blank';
-                        alert('⚠️ Herramientas de desarrollo detectadas.');
-                    }
-                } else {
-                    devtoolsOpen = false;
-                }
-            };
-            
-            // Verificar cada 2 segundos
-            setInterval(devtoolsCheck, 2000);
-            
-            // 6. Prevenir que el usuario salga con clic derecho en la imagen
-            document.querySelectorAll('img').forEach(img => {
-                img.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    alert('⚠️ No está permitido descargar esta imagen.');
-                });
-            });
             
             console.log('✅ Devocionario cargado correctamente.');
             console.log(`📅 Hoy: ${dia} de julio de ${año}`);
